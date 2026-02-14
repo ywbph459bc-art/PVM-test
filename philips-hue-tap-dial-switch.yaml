@@ -2388,33 +2388,24 @@ variables:
   # Unified command - normalize Z2M actions to match
   command: >-
     {% if zha_command != '' %}
-      {% set scene = trigger.event.data.params.scene_id | default(0) | int(0) %}
-      {% if zha_command == 'recall' and scene in [1,2,3,4] %}
-        button_{{ scene }}_short_release
+      {% set scene = trigger.event.data.params.scene_id | default(-1) | int(-1) %}
+      {% if zha_command == 'recall' %}
+        {% if scene == 1 %}
+          button_1_short_release
+        {% elif scene == 0 %}
+          button_2_short_release
+        {% elif scene == 5 %}
+          button_3_short_release
+        {% elif scene == 4 %}
+          button_4_short_release
+        {% else %}
+          unknown
+        {% endif %}
       {% else %}
         {{ zha_command }}
       {% endif %}
     {% elif z2m_action != '' %}
-      {% if z2m_action == 'button_1_press' %}button_1_press
-      {% elif z2m_action == 'button_1_press_release' %}button_1_short_release
-      {% elif z2m_action == 'button_1_hold' %}button_1_hold
-      {% elif z2m_action == 'button_1_hold_release' %}button_1_long_release
-      {% elif z2m_action == 'button_2_press' %}button_2_press
-      {% elif z2m_action == 'button_2_press_release' %}button_2_short_release
-      {% elif z2m_action == 'button_2_hold' %}button_2_hold
-      {% elif z2m_action == 'button_2_hold_release' %}button_2_long_release
-      {% elif z2m_action == 'button_3_press' %}button_3_press
-      {% elif z2m_action == 'button_3_press_release' %}button_3_short_release
-      {% elif z2m_action == 'button_3_hold' %}button_3_hold
-      {% elif z2m_action == 'button_3_hold_release' %}button_3_long_release
-      {% elif z2m_action == 'button_4_press' %}button_4_press
-      {% elif z2m_action == 'button_4_press_release' %}button_4_short_release
-      {% elif z2m_action == 'button_4_hold' %}button_4_hold
-      {% elif z2m_action == 'button_4_hold_release' %}button_4_long_release
-      {% elif 'dial_rotate' in z2m_action or 'brightness_step' in z2m_action %}step_with_on_off
-      {% else %}{{ z2m_action }}
-      {% endif %}
-    {% else %}
+      {{ z2m_action }}
     {% endif %}
   # Rotation parameters
   step_mode: >-
